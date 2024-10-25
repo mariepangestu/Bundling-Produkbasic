@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WarnaController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\ImportCsvController;
 use App\Http\Controllers\PenjualanController;
 
 /*
@@ -28,4 +30,12 @@ Route::resource('product', ProdukController::class);
 Route::resource('transaction', PenjualanController::class);
 
 Route::resource('color', WarnaController::class);
+
+Route::resource('import', ImportCsvController::class);
+
+// Route::group(['middleware' => 'auth'], function () {
+//     Route::post('/upload', [WarnaController::class, 'upload'])->name('upload');
+// });
+
+Route::post('/upload', [WarnaController::class, 'upload'])->name('upload');
 // Route::get('report-produk', [ProdukController::class,'report'])->name('produk.report');

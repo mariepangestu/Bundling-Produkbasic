@@ -13,8 +13,8 @@ class Warna extends Model
     protected $table ='warnas';
     protected $fillable = ['warna'];
 
-    // public function produk()
-    // {
-    //     return $this->belongsTo(Produk::class); // Setiap warna milik satu produk
-    // }
+    public function produk()
+    {
+        return $this->hasMany(Produk::class); // Setiap warna milik satu produk
+    }
 }

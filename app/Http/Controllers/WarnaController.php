@@ -6,6 +6,8 @@ use App\Models\Warna;
 use App\Http\Requests\StoreWarnaRequest;
 use App\Http\Requests\UpdateWarnaRequest;
 use Illuminate\Http\Request;
+use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
+
 
 class WarnaController extends Controller
 {
@@ -17,7 +19,7 @@ class WarnaController extends Controller
         //
         return view('color.index', [
             'warnas' => Warna::all(),
-            'title' => 'Data Warna Produk Zoya'
+            // 'title' => 'Data Warna Produk Zoya'
         ]);
     }
 
@@ -52,47 +54,24 @@ class WarnaController extends Controller
     public function show(Warna $warna)
     {
         //
+        return view('color.import');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    // public function edit(Warna $id)
-    // {
-    //     //
-    //     // $warna = Warna::find($id);
-    //     // return view('color.edit',[
-    //     //     'warna' => $warna
-    //     // ]);
-    //     $warna = Warna::findOrFail($id);
-    //     // $warna = Warna::where('id_warna', $id)->firstOrFail();
-    //     return view('color.edit', compact('warna'));
-    // }
-    public function edit(Warna $warna)
+    public function edit($id)
     {
-        // Route model binding sudah otomatis mengambil Warna berdasarkan ID, tidak perlu findOrFail lagi
+        $warna = Warna::findOrFail($id);
+        // dd($warna);
         return view('color.edit', compact('warna'));
     }
     /**
      * Update the specified resource in storage.
      */
-    // public function update(Request $request, Warna $id)
-    // {
-    //     //
-    //     $rules = [
-    //         'warna' => 'required'
-    //     ];
-    //     $warna = Warna::find($id);
-    //     if ($request->warna != $warna->id_warna) {
-    //         $rules['warna'] = 'required|unique:warnas';
-    //     };
-    //     $validated = $request->validate($rules);
-    //     Warna::where('id_warna', $warna->id_warna)->update($validated);
-    //     session()->flash('success', 'Data Warna Berhasil Diubah!');
-    //     return redirect()->route('color.index');
-    // }
-    public function update(Request $request, Warna $warna)
+    public function update(Request $request, $id)
     {
+        $warna = Warna::findOrFail($id);
         // Aturan validasi
         $rules = [
             'warna' => 'required'
@@ -117,10 +96,49 @@ class WarnaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Warna $id)
+    public function destroy($id)
     {
         //
-        Warna::destroy($id);
+        $warna = Warna::find($id);
+        $warna->delete();
         return redirect('color')->with('success', 'Data Warna Berhasil Dihapus!');
+    }
+
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xls,xlsx|max:2048',
+        ]);
+
+        $filePath = $request->file('file')->store('uploads');
+        $fullPath = storage_path('app/' . $filePath);
+        $reader = ReaderEntityFactory::createReaderFromFile($fullPath);
+        $reader->open($fullPath);
+
+        $isFirstRow = true;
+        $insertedCount = 0; // Hitung berapa banyak data yang berhasil disimpan
+
+        foreach ($reader->getSheetIterator() as $sheet) {
+            foreach ($sheet->getRowIterator() as $row) {
+                if ($isFirstRow) {
+                    $isFirstRow = false;
+                    continue; // Lewati header
+                }
+
+                $cells = $row->getCells();
+
+                if (count($cells) >= 1) { // Ubah menjadi 8 untuk 8 kolom
+                    // Simpan data
+                    Warna::create([
+                        'warna' => $cells[1]->getValue(), // warna
+                    ]);
+                    $insertedCount++; // Increment counter
+                }
+            }
+        }
+
+        $reader->close();
+
+        return redirect()->route('color.index')->with('success', "Data warna berhasil di-upload! Total data yang di-upload: $insertedCount");
     }
 }

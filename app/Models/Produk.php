@@ -11,10 +11,10 @@ class Produk extends Model
     use HasFactory;
     protected $primaryKey = 'id_produk';
     protected $table ='produks';
-    protected $fillable = ['nama_produk','warna'];
+    protected $fillable = ['nama_produk','id_warna','harga'];
 
-    // public function warnas()
-    // {
-    //     return $this->hasMany(Warna::class); // Satu produk memiliki banyak warna
-    // }
+    public function warna()
+    {
+        return $this->belongsTo(Warna::class,'id_warna', 'id_warna'); // banyak produk memiliki banyak warna
+    }
 }
