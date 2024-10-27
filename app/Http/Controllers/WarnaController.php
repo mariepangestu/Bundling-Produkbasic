@@ -18,8 +18,7 @@ class WarnaController extends Controller
     {
         //
         return view('color.index', [
-            'warnas' => Warna::all(),
-            // 'title' => 'Data Warna Produk Zoya'
+            'warnas' => Warna::paginate(15), // Menampilkan 15 item per halaman
         ]);
     }
 

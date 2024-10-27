@@ -27,15 +27,15 @@ Route::get('dashboard',function(){
 
 Route::resource('product', ProdukController::class);
 
+Route::get('/api/product/{id}/warna', [ProdukController::class, 'getWarna']);
+
 Route::resource('transaction', PenjualanController::class);
 
 Route::resource('color', WarnaController::class);
 
 Route::resource('import', ImportCsvController::class);
 
-// Route::group(['middleware' => 'auth'], function () {
-//     Route::post('/upload', [WarnaController::class, 'upload'])->name('upload');
-// });
+Route::post('/color/upload', [WarnaController::class, 'upload'])->name('color.upload');
 
-Route::post('/upload', [WarnaController::class, 'upload'])->name('upload');
+Route::post('/product/upload', [ProdukController::class, 'upload'])->name('product.upload');
 // Route::get('report-produk', [ProdukController::class,'report'])->name('produk.report');

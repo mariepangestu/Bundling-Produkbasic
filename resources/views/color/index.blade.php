@@ -57,6 +57,15 @@
                         @endforeach
                     </tbody>
                 </table>
+                <!-- Tampilkan pagination dengan Bootstrap -->
+        <div class="d-flex justify-content-between">
+            <div>
+                Showing {{ $warnas->firstItem() }} to {{ $warnas->lastItem() }} of {{ $warnas->total() }} entries
+            </div>
+            <div>
+                {{ $warnas->links('pagination::bootstrap-5') }} <!-- Menampilkan pagination dengan Bootstrap -->
+            </div>
+        </div>
             </div>
         </div>
     </div>
@@ -65,7 +74,7 @@
 <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('color.upload') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="uploadModalLabel">Upload File Excel</h5>
